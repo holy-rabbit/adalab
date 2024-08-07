@@ -1,0 +1,330 @@
+08.06 8:06 PM
+
+1. 
+
+CREATE USER emp_user IDENTIFIED BY password;
+
+
+
+GRANT CONNECT, RESOURCE, DBA TO emp_user;
+
+
+
+
+
+CREATE TABLE Employee (
+
+    EMPNO INT,
+
+    ENAME VARCHAR(50),
+
+    JOB VARCHAR(50),
+
+    MANAGER_NO INT,
+
+    SAL DECIMAL(10, 2),
+
+    COMMISSION DECIMAL(10, 2)
+
+);
+
+
+
+START TRANSACTION;
+
+
+
+INSERT INTO Employee (EMPNO, ENAME, JOB, MANAGER_NO, SAL, COMMISSION) VALUES
+
+(1, 'Alice', 'Manager', NULL, 5000.00, 1000.00),
+
+(2, 'Bob', 'Developer', 1, 4000.00, 500.00),
+
+(3, 'Charlie', 'Tester', 1, 3000.00, 300.00);
+
+
+
+Query OK, 3 rows affected (0.00 sec)
+
+Records: 3  Duplicates: 0  Warnings: 0
+
+
+
+ROLLBACK;
+
+
+
+SELECT * FROM Employee;
+
+
+
+ALTER TABLE Employee
+
+MODIFY EMPNO INT NOT NULL,
+
+ADD PRIMARY KEY (EMPNO),
+
+MODIFY ENAME VARCHAR(50) NOT NULL,
+
+MODIFY JOB VARCHAR(50) NOT NULL,
+
+MODIFY MANAGER_NO INT NOT NULL,
+
+MODIFY SAL DECIMAL(10, 2) NOT NULL,
+
+MODIFY COMMISSION DECIMAL(10, 2) NOT NULL;
+
+
+
+DESCRIBE Employee;
+
+
+
+INSERT INTO Employee (EMPNO, ENAME, JOB, MANAGER_NO, SAL, COMMISSION) VALUES
+
+(4, NULL, 'Intern', 2, 2000.00, NULL);
+
+
+
+
+
+ERROR 1048 (23000): Column 'ENAME' cannot be null
+
+
+
+--------+------++++++++-----+++++---
+
+2.
+
+ CREATE TABLE Employee (
+
+    EMPNO INT,
+
+    ENAME VARCHAR(50),
+
+    JOB VARCHAR(50),
+
+    MGR INT,
+
+    SAL DECIMAL(10, 2)
+
+);
+
+
+
+ALTER TABLE Employee ADD COMM DECIMAL(10, 2);
+
+
+
+DESCRIBE Employee;
+
+
+
+INSERT INTO Employee (EMPNO, ENAME, JOB, MGR, SAL, COMM) VALUES
+
+(101, 'Alice', 'Manager', NULL, 5000.00, 1000.00),
+
+(102, 'Bob', 'Developer', 101, 4000.00, 500.00),
+
+(103, 'Charlie', 'Tester', 101, 3000.00, 300.00),
+
+(104, 'David', 'Analyst', 102, 3500.00, 450.00),
+
+(105, 'Eve', 'Clerk', 103, 2500.00, 200.00);
+
+
+
+UPDATE Employee SET JOB = 'Senior Developer' WHERE EMPNO = 102;
+
+
+
+ALTER TABLE Employee RENAME COLUMN COMM TO BONUS;
+
+
+
+DELETE FROM Employee WHERE EMPNO = 105;
+
+
+
+
+
+
+
+------------------_---------_-----;-
+
+3.
+
+CREATE TABLE Employee (
+
+    E_id INT PRIMARY KEY,
+
+    E_name VARCHAR(50),
+
+    Age INT,
+
+    Salary DECIMAL(10, 2)
+
+);
+
+
+
+INSERT INTO Employee (E_id, E_name, Age, Salary) VALUES
+
+(1, 'Alice', 30, 5000.00),
+
+(2, 'Bob', 25, 4000.00),
+
+(3, 'Charlie', 35, 6000.00),
+
+(4, 'David', 28, 4000.00),
+
+(5, 'Eve', 32, 5500.00);
+
+
+
+SELECT COUNT(E_name) AS NumberOfEmployees
+
+FROM Employee;
+
+
+
+SELECT MAX(Age) AS MaximumAge
+
+FROM Employee;
+
+
+
+
+
+SELECT MIN(Age) AS MinimumAge
+
+FROM Employee;
+
+
+
+
+
+SELECT E_id, E_name, Salary
+
+FROM Employee
+
+ORDER BY Salary ASC;
+
+
+
+SELECT Age, SUM(Salary) AS "TOTAL SALARY"
+
+FROM Employee
+
+GROUP BY Age;
+
+
+
+
+
+----------++++++++-----------++----
+
+4.
+
+-- Create the CUSTOMERS table
+
+CREATE TABLE CUSTOMERS (
+
+    ID INT PRIMARY KEY,
+
+    NAME VARCHAR(25),
+
+    SALARY INT(5),
+
+    DIFF INT(5)
+
+);
+
+
+
+-- Insert data into the CUSTOMERS table
+
+INSERT INTO CUSTOMERS (ID, NAME, SALARY, DIFF)
+
+VALUES
+
+(1, 'abhi', 1000, 0),
+
+(2, 'ra', 2000, 0);
+
+
+
+-- Create the mini table
+
+CREATE TABLE mini (
+
+    id INT NOT NULL,
+
+    oldsal INT(5) NOT NULL,
+
+    newsal INT(5) NOT NULL,
+
+    diff INT(5) NOT NULL
+
+);
+
+
+
+-- Create the trigger
+
+DELIMITER $$
+
+
+
+CREATE TRIGGER display_salary_changes
+
+AFTER UPDATE ON CUSTOMERS
+
+FOR EACH ROW 
+
+BEGIN
+
+    INSERT INTO mini (id, oldsal, newsal, diff)
+
+    VALUES (NEW.ID, OLD.SALARY, NEW.SALARY, NEW.SALARY - OLD.SALARY);
+
+END$$
+
+
+
+DELIMITER ;
+
+
+
+-- Test the trigger with an update
+
+UPDATE CUSTOMERS
+
+SET SALARY = 3000
+
+WHERE ID = 1;
+
+
+
+-- Select data from the mini table
+
+SELECT * FROM mini;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
